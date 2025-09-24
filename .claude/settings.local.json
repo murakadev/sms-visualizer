@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm create:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm run:*)",
+      "WebSearch",
+      "WebFetch(domain:proton.me)",
+      "WebFetch(domain:github.com)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm list:*)",
+      "Bash(pnpm remove:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
