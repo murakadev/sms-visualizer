@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, useEffect } from 'react'
-import { parseMessages, fetchPastebinData, fetchInternetArchiveData, fetchGitHubData } from '../lib/utils'
+import { parseMessages, fetchPastebinData, fetchInternetArchiveData, fetchGitHubData, fetchGenericJsonData } from '../lib/utils'
 
 const AppContext = createContext()
 
@@ -208,6 +208,27 @@ export function AppProvider({ children }) {
     reader.readAsText(file)
   }
 
+  const loadFromGenericJson = async (jsonUrl) => {
+    dispatch({ type: 'SET_LOADING', payload: true })
+    dispatch({ type: 'CLEAR_ERROR' })
+
+    try {
+      const data = await fetchGenericJsonData(jsonUrl)
+      const messages = parseMessages(data)
+
+      if (messages.length === 0) {
+        throw new Error('No messages found in the JSON data')
+      }
+
+      dispatch({ type: 'SET_MESSAGES', payload: messages })
+      console.log(`Loaded ${messages.length} messages from JSON URL`)
+    } catch (error) {
+      dispatch({ type: 'SET_ERROR', payload: `Failed to load JSON data: ${error.message}` })
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false })
+    }
+  }
+
   const loadFromUrl = async (url) => {
     // Smart URL detection
     if (url.includes('pastebin.com')) {
@@ -223,8 +244,17 @@ export function AppProvider({ children }) {
     } else if (url.length <= 20 && /^[a-zA-Z0-9]+$/.test(url)) {
       // Looks like a pastebin key
       return loadFromPastebin(url)
+    } else if (url.endsWith('.json') || url.includes('github.io')) {
+      // Direct JSON URL or GitHub Pages
+      return loadFromGenericJson(url)
     } else {
-      dispatch({ type: 'SET_ERROR', payload: 'Unsupported URL format. Please use Pastebin, GitHub, or Internet Archive URLs.' })
+      // Try as generic JSON URL as last resort
+      try {
+        const urlObj = new URL(url)
+        return loadFromGenericJson(url)
+      } catch {
+        dispatch({ type: 'SET_ERROR', payload: 'Invalid URL format. Please use a valid JSON URL, Pastebin, GitHub, or Internet Archive URL.' })
+      }
     }
   }
 
@@ -235,6 +265,7 @@ export function AppProvider({ children }) {
     loadFromPastebin,
     loadFromInternetArchive,
     loadFromGitHub,
+    loadFromGenericJson,
     loadFromUrl,
   }
 

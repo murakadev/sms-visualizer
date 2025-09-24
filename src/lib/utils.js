@@ -173,6 +173,53 @@ export async function fetchGitHubData(githubUrl) {
   }
 }
 
+export async function fetchGenericJsonData(jsonUrl) {
+  try {
+    // Validate URL format
+    const url = new URL(jsonUrl)
+
+    const response = await fetch(jsonUrl, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+      },
+      mode: 'cors'
+    })
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('JSON file not found. Please check the URL and try again.')
+      } else if (response.status === 403) {
+        throw new Error('JSON file access denied.')
+      } else {
+        throw new Error(`Failed to fetch JSON data (${response.status})`)
+      }
+    }
+
+    const text = await response.text()
+
+    if (!text || text.trim().length === 0) {
+      throw new Error('JSON file is empty or contains no data')
+    }
+
+    // Try to parse as JSON
+    try {
+      return JSON.parse(text)
+    } catch (parseError) {
+      throw new Error('File does not contain valid JSON data')
+    }
+  } catch (error) {
+    if (error.name === 'TypeError' && error.message.includes('CORS')) {
+      throw new Error(
+        'JSON file cannot be fetched due to CORS restrictions. ' +
+        'Please ensure the server allows cross-origin requests or download the file manually.'
+      )
+    }
+    console.error('Error fetching JSON data:', error)
+    throw error
+  }
+}
+
 export function debounce(func, wait) {
   let timeout
   return function executedFunction(...args) {

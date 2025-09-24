@@ -9,7 +9,8 @@
       "WebFetch(domain:github.com)",
       "Bash(pnpm add:*)",
       "Bash(pnpm list:*)",
-      "Bash(pnpm remove:*)"
+      "Bash(pnpm remove:*)",
+      "WebFetch(domain:oreofreakshake.github.io)"
     ],
     "deny": [],
     "ask": []

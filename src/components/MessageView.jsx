@@ -329,8 +329,10 @@ function EmptyMessageView() {
               <div className="text-xs text-muted-foreground space-y-2">
                 <p><strong>Supported sources:</strong></p>
                 <ul className="text-left space-y-1 ml-4">
+                  <li>• <strong>Direct JSON:</strong> Any URL ending in .json or serving JSON content</li>
                   <li>• <strong>Pastebin:</strong> Key (e.g., &quot;abc123&quot;) or full URL</li>
                   <li>• <strong>GitHub:</strong> Raw file URLs or repository blob URLs</li>
+                  <li>• <strong>GitHub Pages:</strong> JSON files hosted on github.io domains</li>
                   <li>• <strong>Internet Archive:</strong> Direct JSON file URLs</li>
                 </ul>
               </div>
